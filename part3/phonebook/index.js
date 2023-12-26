@@ -1,7 +1,15 @@
 const express = require('express')
 const app = express()
+var morgan = require('morgan')  // Add morgan middleware to app for logging
 
 app.use(express.json())
+
+morgan.token('info', function getInfo (request) {
+    return request.info
+})
+
+// Configure morgan to log msgs to console based on the tiny configuration + person info
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :info'))
 
 let persons = [
     { 
@@ -25,3 +33,72 @@ let persons = [
         "number": "39-23-6423122"
     }
 ]
+
+app.get('/api/persons', (request, response) => {
+    response.json(persons)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+    if (person) {
+        response.json(person)
+    } else {
+        response.status(404).end()
+    }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    persons = persons.filter(person => person.id !== id)
+
+    response.status(204).end()
+})
+
+app.get('/info', (request, response) => {
+    const numberOfPersons = persons.length
+    const requestTime = new Date().toString()
+
+    const info = 
+        `<p>Phonebook has info for ${numberOfPersons} people</p>
+         <p>${requestTime}</p>`
+
+    response.send(info)
+})
+
+app.post('/api/persons', (request, response, next) => {
+    const body = request.body
+
+    request.info = JSON.stringify(body)
+    next()
+
+    if (!body.name || !body.number) {
+        return response.status(400).json({
+            error: 'Name and number are required'
+        })
+    }
+
+    // Check if name already exists in phonebook
+    const duplicateName = persons.find(person => person.name === body.name)
+    if (duplicateName) {
+        return response.status(400).json({
+            error: 'Name must be unique'
+        })
+    }
+
+    const person = {
+        id: Math.floor(Math.random() * 10000),
+        name: body.name,
+        number: '012-345-6789'
+    }
+
+    persons = persons.concat(person)
+
+    response.json(person)
+    //next()
+})
+
+const PORT = 3001
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})

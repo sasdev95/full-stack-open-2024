@@ -1,0 +1,28 @@
+{
+  "name": "phonebook",
+  "version": "1.0.0",
+  "description": "phonebook for exercises 3.1-3.8",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sasdev95/full-stack-open-2023.git#main"
+  },
+  "author": "Devon Sasaki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sasdev95/full-stack-open-2023/issues"
+  },
+  "homepage": "https://github.com/sasdev95/full-stack-open-2023/tree/main#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
