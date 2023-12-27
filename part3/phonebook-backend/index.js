@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
 var morgan = require('morgan')  // Add morgan middleware to app for logging
+const cors = require('cors')
 
 app.use(express.json())
+app.use(cors())
 
 morgan.token('info', function getInfo (request) {
     return request.info
@@ -98,7 +100,7 @@ app.post('/api/persons', (request, response, next) => {
     //next()
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
