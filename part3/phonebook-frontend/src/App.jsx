@@ -69,8 +69,20 @@ const App = () => {
             setDisplayMessage(null)
           }, 3000)
         })
+        .catch(error => {
+          // Handle validation error
+          if (error.response && error.response.status === 400) {
+            setDisplayMessage(error.response.data.error);
+          } else {
+            // Handle other errors
+            console.error('Error adding person:', error)
+            setDisplayMessage('Error adding person. Please try again.')
+          }
+          setTimeout(() => {
+            setDisplayMessage(null)
+          }, 5000)
+        })
     }
-
     setNewName('')
     setNewNumber('')
   }
