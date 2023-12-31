@@ -37,7 +37,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndDelete(request.params.id)
-        .then(result => {
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
@@ -46,15 +46,16 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.get('/info', (request, response) => {
     const requestTime = new Date().toString()
 
-    Person.countDocuments({}).then(count => {
-        const info = `<p>Phonebook has info for ${count} people</p>
-                      <p>${requestTime}</p>`
-        response.send(info)
-    })
-    .catch(error => {
-        console.error('Error fetching count:', error)
-        response.status(500).send('Internal Server Error')
-    })
+    Person.countDocuments({})
+        .then(count => {
+            const info = `<p>Phonebook has info for ${count} people</p>
+                          <p>${requestTime}</p>`
+            response.send(info)
+        })
+        .catch(error => {
+            console.error('Error fetching count:', error)
+            response.status(500).send('Internal Server Error')
+        })
 })
 
 // Used if name already exists in phonebook
@@ -92,7 +93,7 @@ app.post('/api/persons', (request, response, next) => {
     person.save()
         .then(savedPerson => {
             response.json(savedPerson)
-         })
+        })
         .catch((error) => next(error))
 })
 
