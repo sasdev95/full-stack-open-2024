@@ -1,21 +1,37 @@
-// App.js
-import React from 'react';
-import BlogList from './BlogList';
-import AddBlogForm from './AddBlogForm';
+import { useState, useEffect } from 'react'
+import Blog from './components/Blog' 
+import BlogForm from './components/BlogForm'
+import blogService from './services/blogs' 
 
 const App = () => {
-  const handleBlogAdded = (newBlog) => {
-    // Handle the addition of a new blog, e.g., update state or perform any other actions
-    console.log('New blog added:', newBlog);
-  };
+  const [blogs, setBlogs] = useState([])
+
+  useEffect(() => {
+    blogService.getAll()
+      .then(data => setBlogs(data))
+      .catch(error => console.error('Error fetching blogs:', error))
+  }, [])
+
+  const updateBlogs = (data) => {
+    setBlogs(data)
+  }
 
   return (
     <div>
-      <h1>Blog App</h1>
-      <BlogList />
-      <AddBlogForm onBlogAdded={handleBlogAdded} />
+      <h1>Blog List</h1>
+
+      <div>
+        {Array.isArray(blogs) 
+          ? blogs.map(blog => 
+            <Blog key={blog._id} blog={blog} />
+            )
+          : <p>No blogs available.</p>
+        }
+      </div>
+
+      <BlogForm updateBlogs={updateBlogs} />
     </div>
-  );
-};
+  )
+}
 
 export default App
