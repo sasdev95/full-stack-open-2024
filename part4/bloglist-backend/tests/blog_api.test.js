@@ -12,6 +12,7 @@ test('blogs are returned as json', async () => {
 })
 
 test('all blogs are returned', async () => {
+    // TO DO
     const response = await api.get('/api/blogs')
 
     expect(response.body).toHaveLength()
