@@ -1,12 +1,14 @@
 {
-  "name": "backend",
+  "name": "notes-backend",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "shx rm -rf dist && cd ../notes-frontend && npm run build && cp -r dist ../notes-backend",
+    "deploy:full": "shx npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "Devon Sasaki",
   "license": "MIT",
@@ -15,6 +17,7 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.1"
+    "nodemon": "^3.1.1",
+    "shx": "^0.3.4"
   }
 }
