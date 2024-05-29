@@ -32,18 +32,23 @@ const App = () => {
         personService.update(existingPerson.id, updatedPerson)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
-            setDisplayMessage(
-              `Updated ${existingPerson.name}'s number to ${newNumber}`
-            )
+            setDisplayMessage({
+              text: `Updated ${existingPerson.name}'s number to ${newNumber}`,
+              type: 'success'
+            })
             setTimeout(() => {
               setDisplayMessage(null)
-            }, 3000)
+            }, 5000)
           })
-          .catch(() => {
-            setDisplayMessage(`Information of ${existingPerson.name} has already been removed from server`)
+          .catch(error => {
+            setDisplayMessage({
+              //text: `Information of ${existingPerson.name} has already been removed from server`,
+              text: error.response.data.error,
+              type: 'error'
+            })
             setTimeout(() => {
               setDisplayMessage(null)
-            }, 3000)
+            }, 5000)
           })
       } 
     // Person does not exist in phonebook
@@ -57,9 +62,27 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          setDisplayMessage(
-            `Added ${newName}`
-          )
+          setDisplayMessage({
+            text: `Added ${newName}`,
+            type: 'success'
+          })
+          setTimeout(() => {
+            setDisplayMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          if (error.response && error.response.data) {
+            console.error(error.response.data.error)
+            setDisplayMessage({ 
+              text: error.response.data.error, 
+              type: 'error' 
+            })
+          } else {
+            setDisplayMessage({ 
+              text: 'An unexpected error occurred',
+              type: 'error' 
+            })
+          }
           setTimeout(() => {
             setDisplayMessage(null)
           }, 3000)

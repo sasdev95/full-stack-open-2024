@@ -2,18 +2,13 @@ const Notification = ({ message }) => {
     if (message === null) {
         return null
     }
-
-    if (message.includes('Added') || message.includes('Updated')) {
-        return (
-            <div className='success'>
-                {message}
-            </div>
-        )
-    }
+    
+    const messageText = message.text || ""
+    const messageClass = message.type === 'error' ? 'error' : 'success'
     
     return (
-        <div className='error'>
-            {message}
+        <div className={messageClass}>
+            {messageText}
         </div>
     )
 }
