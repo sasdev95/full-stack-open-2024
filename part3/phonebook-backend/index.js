@@ -26,7 +26,7 @@ const errorHandler = (error, request, response, next) => {
     }
 
     next(error)
-} 
+}
 
 const cors = require('cors')
 
@@ -72,15 +72,15 @@ app.post('/api/persons', (request, response, next) => {
     person.save()
         .then(savedPerson => {
             response.json(savedPerson)
-         })
-         .catch(error => next(error))
+        })
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
     const { name, number } = request.body
 
     Person.findByIdAndUpdate(
-        request.params.id, 
+        request.params.id,
         { name, number },
         { new: true, runValidators: true, context: 'query' }
     )
