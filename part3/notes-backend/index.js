@@ -24,7 +24,7 @@ const errorHandler = (error, request, response, next) => {
     }
 
     next(error)
-} 
+}
 
 const cors = require('cors')
 
@@ -60,7 +60,7 @@ app.get('/api/notes/:id', (request, response, next) => {
 
 app.post('/api/notes', (request, response, next) => {
     const body = request.body
- 
+
     const note = new Note({
         content: body.content,
         important: body.important || false,
@@ -77,8 +77,8 @@ app.put('/api/notes/:id', (request, response, next) => {
     const { content, important } = request.body
 
     Note.findByIdAndUpdate(
-        request.params.id, 
-        { content, important }, 
+        request.params.id,
+        { content, important },
         { new: true, runValidators: true, context: 'query' }
     )
         .then(updatedNote => {
