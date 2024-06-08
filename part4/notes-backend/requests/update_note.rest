@@ -1,6 +1,6 @@
-PUT http://localhost:3001/api/notes/658f12eab251b73400870ad0
+PUT http://localhost:3001/api/notes/66560883edc69f43dd931f6b
 Content-Type: application/json
 
 {
-    "content": "HTML is Easy"
+  "content": "This note has been changed successfully"
 }
