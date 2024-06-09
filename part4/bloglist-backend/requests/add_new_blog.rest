@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY2NjRhZThiMDlmOTU4YWI0OGExYjI1YSIsImlhdCI6MTcxNzg5MTYzNSwiZXhwIjoxNzE3ODk1MjM1fQ.RVtRPp64NooXjyzfyUEkPfCPw91cb8S0MEqu7KOnF-k
 
 {
-    "title": "Blog about Blobs",
-    "author": "Blobby",
-    "url": "blobsfordays.com",
-    "likes": 10
+    "title": "another test blog again",
+    "author": "test author 2",
+    "url": "someBlogUrl2.com",
+    "likes": 3
 }
