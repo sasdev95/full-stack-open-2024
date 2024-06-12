@@ -17,13 +17,13 @@ const BlogForm = ({ createBlog }) => {
         <form onSubmit={handleCreateBlog}>
             <h2>Create New Blog</h2>
             <div>
-                title: <input value={title} onChange={({ target }) => setTitle(target.value)} />
+                Title: <input value={title} onChange={event => setTitle(event.target.value)} />
             </div>
             <div>
-                author: <input value={author} onChange={({ target }) => setAuthor(target.value)} />
+                Author: <input value={author} onChange={event => setAuthor(event.target.value)} />
             </div>
             <div>
-                url: <input value={url} onChange={({ target }) => setUrl(target.value)} />
+                URL: <input value={url} onChange={event => setUrl(event.target.value)} />
             </div>
             <button type="submit">create</button>
         </form>
