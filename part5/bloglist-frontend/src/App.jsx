@@ -69,7 +69,7 @@ const App = () => {
         } catch (exception) {
             showNotification('Wrong username or password', true)
             setTimeout(() => {
-                setErrorMessage(null)
+                setNotification({ message: null, isError: false })
             }, 3000)
         }
     }
