@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, onLike, onRemove }) => {
+const Blog = ({ blog, onLike, onRemove, currentUser }) => {
     const [visible, setVisible] = useState(false)
     const toggleVisibility = () => setVisible(!visible)
 
@@ -22,10 +22,11 @@ const Blog = ({ blog, onLike, onRemove }) => {
           onRemove(blog.id)
         }
     }
+
     return (
         <div>
             <div style={blogStyle}>
-                <div className="blogTitleAuthor">
+                <div className="blogTitleAuthor" data-testid="blogEntry">
                     {blog.title} by {blog.author} &nbsp;
                     <button onClick={toggleVisibility}>
                         {visible ? 'hide' : 'view'}
@@ -33,9 +34,12 @@ const Blog = ({ blog, onLike, onRemove }) => {
                 </div>  
                 <div className="blogDetails" style={detailStyle}>
                     <p className="blogUrl">{blog.url}</p>
-                    <p className="blogLikes">{blog.likes} likes <button onClick={() => onLike(blog)}>like</button></p>
-                    {blog.user && (
-                        <button onClick={handleRemove}>remove</button>
+                    <p className="blogLikes" data-testid={`blogLikes-${blog.id}`}>
+                        {blog.likes} likes 
+                        <button onClick={() => onLike(blog)}>like</button>
+                    </p>
+                    {blog.user.username === currentUser.username && (
+                        <button onClick={handleRemove} data-testid="remove">remove</button>
                     )}
                 </div>
             </div>
@@ -51,7 +55,9 @@ Blog.propTypes = {
         url: PropTypes.string.isRequired,
         likes: PropTypes.number.isRequired,
     }).isRequired,
-    onLike: PropTypes.func.isRequired
+    onLike: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
+    currentUser: PropTypes.object,
 }
 
 export default Blog

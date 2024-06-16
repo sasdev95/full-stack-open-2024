@@ -28,13 +28,17 @@ blogsRouter.post('/', async (request, response) => {
         author: request.body.author,
         url: request.body.url,
         likes: request.body.likes || 0,
-        user: user._id
+        user: {
+            _id: user._id,
+            username: user.username,
+            name: user.name
+        }
     })
 
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
-
+    
     response.status(201).json(savedBlog)
 })
 
@@ -46,7 +50,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
             return response.status(404).json({ error: 'blog not found' })
         }
 
-        if (blog.user.toString() !== request.user._id.toString()) {
+        if (blog.user._id.toString() !== request.user._id.toString()) {
             return response.status(403).json({ error: 'only the creator can delete this blog' })
         }
 
