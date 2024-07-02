@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 require('express-async-errors');
 const cors = require('cors');
+const path = require('path');
 
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
@@ -39,6 +40,10 @@ if (process.env.NODE_ENV === 'test') {
     const testingRouter = require('./controllers/testing');
     app.use('/api/testing', testingRouter);
 }
+
+app.get('*', (request, response) => {
+    response.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+});
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

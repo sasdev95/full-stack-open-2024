@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button, TextField, Typography, Box, Container } from '@mui/material';
 
 const BlogForm = ({ createBlog }) => {
     const [title, setTitle] = useState('');
@@ -14,34 +15,40 @@ const BlogForm = ({ createBlog }) => {
     };
 
     return (
-        <form onSubmit={handleCreateBlog}>
-            <h2>Create New Blog</h2>
-            <div>
-                <label htmlFor="title">Title:</label> &nbsp;
-                <input
+        <Container component="form" onSubmit={handleCreateBlog} sx={{ mt: 4 }}>
+            <Typography variant="h6" gutterBottom>
+                Create New Blog
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField
                     id="title"
+                    label="Title"
+                    variant="outlined"
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
+                    fullWidth
                 />
-            </div>
-            <div>
-                <label htmlFor="author">Author:</label> &nbsp;
-                <input
+                <TextField
                     id="author"
+                    label="Author"
+                    variant="outlined"
                     value={author}
                     onChange={(event) => setAuthor(event.target.value)}
+                    fullWidth
                 />
-            </div>
-            <div>
-                <label htmlFor="url">URL:</label> &nbsp;
-                <input
+                <TextField
                     id="url"
+                    label="URL"
+                    variant="outlined"
                     value={url}
                     onChange={(event) => setUrl(event.target.value)}
+                    fullWidth
                 />
-            </div>
-            <button type="submit">create</button>
-        </form>
+                <Button type="submit" variant="contained" color="primary">
+                    Create
+                </Button>
+            </Box>
+        </Container>
     );
 };
 

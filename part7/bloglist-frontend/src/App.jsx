@@ -1,43 +1,68 @@
-import { useState, useEffect, useRef } from 'react';
-import Blog from './components/Blog';
+import { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, Route, Routes } from 'react-router-dom';
+
+import { setUser, clearUser } from './slices/loggedUserSlice';
+import { fetchBlogs, addBlog } from './slices/blogsSlice'
+import { setNotification, clearNotification } from './slices/notificationsSlice';
+
+import BlogDetails from './components/BlogDetails';
 import BlogForm from './components/BlogForm';
+import LoginForm from './components/LoginForm';
+import UserList from './components/UserList';
+import User from './components/User';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+
 import blogService from './services/blogs';
 import loginService from './services/login';
 
-const App = () => {
-    const [blogs, setBlogs] = useState([]);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [user, setUser] = useState(null);
-    const [notification, setNotification] = useState({
-        message: null,
-        isError: false,
-    });
+import { AppBar,
+        Toolbar,
+        Card,
+        CardContent,
+        Grid,
+        Typography,
+        Button,
+        CssBaseline,
+        Link as MuiLink,
+        Container,
+        Box,
+} from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#1976d2',
+        },
+        secondary: {
+            main: '#dc004e',
+        },
+    },
+});
+
+const App = () => {
+    const dispatch = useDispatch();
+    const blogs = useSelector(state => state.blogs);
+    const notification = useSelector(state => state.notifications);
+    const user = useSelector(state => state.loggedUser.user);
     const blogFormRef = useRef();
 
     useEffect(() => {
+        dispatch(fetchBlogs());
         const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
         if (loggedUserJSON) {
             const user = JSON.parse(loggedUserJSON);
-            setUser(user);
+            dispatch(setUser(user));
             blogService.setToken(user.token);
         }
-    }, []);
-
-    useEffect(() => {
-        blogService.getAll().then((blogs) => {
-            const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-            setBlogs(sortedBlogs);
-        });
-    }, []);
+    }, [dispatch]);
 
     const showNotification = (message, isError = false) => {
-        setNotification({ message, isError });
+        dispatch(setNotification({ message, isError }));
         setTimeout(() => {
-            setNotification({ message: null, isError: false });
+            dispatch(clearNotification());
         }, 3000);
     };
 
@@ -45,34 +70,20 @@ const App = () => {
         blogFormRef.current.toggleVisibility();
         try {
             const newBlog = await blogService.create(blogData);
-            //setBlogs(blogs.concat(newBlog))
-            const updatedBlogs = blogs.concat(newBlog);
-            updatedBlogs.sort((a, b) => b.likes - a.likes);
-            setBlogs(updatedBlogs);
-            showNotification(
-                `A new blog ${newBlog.title} by ${newBlog.author} added`
-            );
+            dispatch(addBlog(newBlog));
+            showNotification(`A new blog ${newBlog.title} by ${newBlog.author} added`);
         } catch (exception) {
             showNotification('Failed to add blog', true);
         }
     };
 
-    const handleLogin = async (event) => {
-        event.preventDefault();
+    const handleLogin = async (username, password) => {
         try {
-            const user = await loginService.login({
-                username,
-                password,
-            });
-            window.localStorage.setItem(
-                'loggedBlogAppUser',
-                JSON.stringify(user)
-            );
+            const user = await loginService.login({ username, password });
+            window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
             blogService.setToken(user.token);
-            setUser(user);
+            dispatch(setUser(user));
             showNotification('Logged in successfully');
-            setUsername('');
-            setPassword('');
         } catch (exception) {
             showNotification('Wrong username or password', true);
             setTimeout(() => {
@@ -83,105 +94,70 @@ const App = () => {
 
     const handleLogout = () => {
         window.localStorage.removeItem('loggedBlogAppUser');
-        setUser(null);
+        dispatch(clearUser());
         blogService.setToken(null);
     };
 
-    const handleLike = async (blogToLike) => {
-        try {
-            const updatedBlog = {
-                ...blogToLike,
-                likes: blogToLike.likes + 1,
-            };
-            const returnedBlog = await blogService.update(
-                blogToLike.id,
-                updatedBlog
-            );
-            const updatedBlogs = blogs.map((blog) =>
-                blog.id === returnedBlog.id ? returnedBlog : blog
-            );
-            updatedBlogs.sort((a, b) => b.likes - a.likes);
-            setBlogs(updatedBlogs);
-        } catch (error) {
-            console.error('Error updating the blog:', error);
-        }
-    };
-
-    const handleRemoveBlog = async (id) => {
-        try {
-            await blogService.remove(id);
-            setBlogs(blogs.filter((blog) => blog.id !== id));
-            showNotification(`Blog deleted successfully`);
-        } catch (error) {
-            showNotification('Failed to delete blog', true);
-        }
-    };
-
-    const loginForm = () => (
-        <div>
-            <h2>Log in to application</h2>
-            <Notification
-                message={notification.message}
-                isError={notification.isError}
-            />
-            <form onSubmit={handleLogin}>
-                <div>
-                    username &nbsp;
-                    <input
-                        data-testid="username"
-                        type="text"
-                        value={username}
-                        name="Username"
-                        onChange={({ target }) => setUsername(target.value)}
-                    />
-                </div>
-                <div>
-                    password &nbsp;
-                    <input
-                        data-testid="password"
-                        type="password"
-                        value={password}
-                        name="Password"
-                        onChange={({ target }) => setPassword(target.value)}
-                    />
-                </div>
-                <button type="submit">login</button>
-            </form>
-        </div>
-    );
-
-    if (user === null) {
-        // User not logged in
-        return loginForm();
+    if (user === null) {  // User not logged in
+        return <LoginForm onSubmit={handleLogin} notification={notification} />;
     }
 
-    return (
-        // User is logged in
-        <div>
-            <h2>Blogs</h2>
-            <Notification
-                message={notification.message}
-                isError={notification.isError}
-            />
-            <p>
-                {user.name} logged in{' '}
-                <button onClick={handleLogout}>logout</button>
-            </p>
-            <Togglable buttonLabel="create blog" ref={blogFormRef}>
-                <BlogForm createBlog={createBlog} />
-            </Togglable>
-            <br />
-
-            {blogs.map((blog) => (
-                <Blog
-                    key={blog.id}
-                    blog={blog}
-                    onLike={() => handleLike(blog)}
-                    onRemove={() => handleRemoveBlog(blog.id)}
-                    currentUser={user}
-                />
-            ))}
-        </div>
+    return (  // User is logged in
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <AppBar position="static">
+                <Toolbar>
+                    <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center', gap: 2}}>
+                        <MuiLink component={Link} to="/" color="inherit" style={{ textDecoration: 'none' }}>
+                            <Typography variant="h6" component="span">Blogs</Typography>
+                        </MuiLink>
+                        <MuiLink component={Link} to="/users" color="inherit">
+                            <Typography variant="h6" component="span">Users</Typography>
+                        </MuiLink>
+                        <Typography>{user.name} logged in</Typography>
+                    </Box>
+                    <Button color="inherit" onClick={handleLogout}>Logout</Button>
+                </Toolbar>
+            </AppBar>
+            <Container>
+                <Typography variant="h4" component="h2" sx={{ mt: 4, mb: 2 }}>
+                    Blogs
+                </Typography>
+                <Notification message={notification.message} isError={notification.isError} />
+                <Routes>
+                    <Route path="/" element={
+                        <>
+                            <Togglable buttonLabel="create blog" ref={blogFormRef}>
+                                <BlogForm createBlog={createBlog} />
+                            </Togglable>
+                            <br />
+                            <Grid container spacing={2}>
+                                {blogs.map((blog) => (
+                                    <Grid item xs={12} md={6} key={blog.id}>
+                                        <Card>
+                                            <CardContent>
+                                                <Typography variant="h5" component="div">
+                                                    {blog.title}
+                                                </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary">
+                                                    by {blog.author}
+                                                </Typography>
+                                                <Button size="small" component={Link} to={`/blogs/${blog.id}`}>
+                                                    View Details
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </>
+                    } />
+                    <Route path="/blogs/:id" element={<BlogDetails />} />
+                    <Route path="/users" element={<UserList />} />
+                    <Route path="/users/:id" element={<User />} />
+                </Routes>
+            </Container>
+        </ThemeProvider>
     );
 };
 
