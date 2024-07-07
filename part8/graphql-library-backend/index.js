@@ -126,9 +126,10 @@ const typeDefs = `
     }
 
     type Query {
-        allBooks(author: String): [Book!]!
+        allBooks(author: String, genre: String): [Book!]!
         allAuthors: [Author!]!
         me: User
+        recommendedBooks: [Book!]!
     }
 
     type Mutation {
@@ -146,8 +147,9 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        allBooks: async (_, { author }) => {
+        allBooks: async (_, { author, genre }) => {
             let query = {}
+
             if (author) {
                 const authorDoc = await Author.findOne({ name: author })
                 if (authorDoc) {
@@ -156,6 +158,11 @@ const resolvers = {
                     return []
                 }
             }
+
+            if (genre) {
+                query.genres = { $in: [genre] }
+            }
+
             return Book.find(query).populate('author')
         },
         allAuthors: async () =>  {
@@ -178,6 +185,16 @@ const resolvers = {
                 })
             }
             return currentUser
+        },
+        recommendedBooks: async (_, args, { currentUser }) => {
+            if (!currentUser) {
+                throw new GraphQLError('You must be logged in to see book recommendations', {
+                    extensions: {
+                        code: 'UNAUTHENTICATED'
+                    }
+                })
+            }
+            return Book.find({ genres: currentUser.favoriteGenre }).populate('author')
         }
     },
     Mutation: {
@@ -243,7 +260,13 @@ const resolvers = {
                         }
                     })
                 }
-                return author
+
+                const bookCount = await Book.countDocuments({ author: author._id })
+
+                return {
+                    ...author.toObject(),
+                    bookCount
+                }
             } catch (error) {
                 if (error.name === 'ValidationError') {
                     const messages = Object.values(error.errors).map(val => val.message)
@@ -271,7 +294,6 @@ const resolvers = {
                     }
                 })
             }
-            
         },
         login: async (_, { username, password }) => {
             const user = await User.findOne({ username })
@@ -288,7 +310,7 @@ const resolvers = {
                 id: user._id
             }
 
-            const token = jwt.sign(userForToken, process.env.JWT_SECRET, { expiresIn: '1h' })
+            const token = jwt.sign(userForToken, process.env.JWT_SECRET)
             return { value: token }
         },
 

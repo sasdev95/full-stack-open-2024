@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@apollo/client'
 import Select from 'react-select'
 import { GET_AUTHORS, SET_AUTHOR_BIRTHYEAR } from '../queries'
 
-const Authors = ({ show }) => {
+const Authors = ({ show, token }) => {
   const { data, loading, error } = useQuery(GET_AUTHORS, { skip: !show })
   const [selectedAuthor, setSelectedAuthor] = useState('')
   const [born, setBorn] = useState('')
@@ -65,26 +65,28 @@ const Authors = ({ show }) => {
           ))}
         </tbody>
       </table>
-      <div>
-        <h3>Set Birth Year</h3>
-        <form onSubmit={handleSubmit}>
-          <Select
-            value={selectedAuthor}
-            onChange={setSelectedAuthor}
-            options={options}
-            className="react-select-container"
-            classNamePrefix="react-select"
-          />
-          <input
-            type="number"
-            value={born}
-            onChange={(e) => setBorn(e.target.value)}
-            placeholder="Set birth year"
-          />
-          <br />
-          <button type="submit">Update Author</button>
-        </form>
-      </div>
+      {token && (
+        <div>
+          <h3>Set Birth Year</h3>
+          <form onSubmit={handleSubmit}>
+            <Select
+              value={selectedAuthor}
+              onChange={setSelectedAuthor}
+              options={options}
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
+            <input
+              type="number"
+              value={born}
+              onChange={(e) => setBorn(e.target.value)}
+              placeholder="Set birth year"
+            />
+            <br />
+            <button type="submit">Update Author</button>
+          </form>
+        </div>
+      )}
     </div>
   )
 }
