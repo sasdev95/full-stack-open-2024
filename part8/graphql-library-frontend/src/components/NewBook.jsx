@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ADD_BOOK, GET_BOOKS, GET_AUTHORS } from '../queries'
+
+import { ADD_BOOK, GET_BOOKS, GET_AUTHORS, GET_RECOMMENDED_BOOKS } from '../queries'
+import { updateCache } from '../App'
 
 const NewBook = ({ show }) => {
   const [title, setTitle] = useState('')
@@ -11,10 +13,15 @@ const NewBook = ({ show }) => {
 
   const [createBook] = useMutation(ADD_BOOK, {
     refetchQueries: [
-      { query: GET_BOOKS, varibles: { genre: null } },
-      { query: GET_AUTHORS }],
+      { query: GET_BOOKS },
+      { query: GET_AUTHORS },
+      { query: GET_RECOMMENDED_BOOKS },
+    ],
     onError: (error) => {
       console.log(`Error adding book: ${error.message}`)
+    },
+    update: (cache, response) => {
+      updateCache(cache, { query: GET_BOOKS }, response.data.addBook)
     }
   })  
 

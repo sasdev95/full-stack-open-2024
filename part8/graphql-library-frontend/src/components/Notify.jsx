@@ -1,25 +1,23 @@
 import { useState, useEffect } from 'react'
 
-const Notify = ({ errorMessage }) => {
+const Notify = ({ message }) => {
+    
     const [visible, setVisible] = useState('false')
 
     useEffect(() => {
-        if (errorMessage) {
+        if (message) {
             setVisible(true)
-            const timer = setTimeout(() => {
-                setVisible(false)
-            }, 5000)
-            return () => clearTimeout(timer)
+            setTimeout(() => setVisible(false), 5000)
         }
-    }, [errorMessage])
+    }, [message])
     
     if (!visible) {
         return null
     }
 
     return (
-        <div style={{color: 'red'}}>
-            {errorMessage}
+        <div style={{ color: 'red' }}>
+            {message}
         </div>
     )
   }

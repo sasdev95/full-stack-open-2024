@@ -9,6 +9,7 @@ const LoginForm = ({ setError, setToken }) => {
     const [login, result] = useMutation(LOGIN, {
         onError: (error) => {
             setError(error.graphQLErrors[0].message)
+            setTimeout(() => setError(''), 5000)
         }
     })
 
@@ -18,7 +19,7 @@ const LoginForm = ({ setError, setToken }) => {
             setToken(token)
             localStorage.setItem('library-user-token', token)
         }
-    }, [result.data])
+    }, [result.data, setToken])
 
     const submit = async (event) => {
         event.preventDefault()

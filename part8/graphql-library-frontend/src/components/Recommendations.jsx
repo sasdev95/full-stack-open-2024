@@ -24,7 +24,7 @@ const Recommendations = ({ show }) => {
         </thead>
         <tbody>
           {data.recommendedBooks.map((book) => (
-            <tr key={book.id}>
+            <tr key={book.title}>
               <td>{book.title}</td>
               <td>{book.author.name}</td>
               <td>{book.published}</td>
