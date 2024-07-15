@@ -1,0 +1,17 @@
+.diaryList {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .diaryEntry {
+    margin-bottom: 20px;
+  }
+  
+  .diaryDate {
+    font-weight: bold;
+  }
+  
+  .diaryDetails {
+    margin-left: 10px;
+  }
+  
