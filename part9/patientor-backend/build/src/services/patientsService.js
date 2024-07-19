@@ -14,9 +14,17 @@ const getPatients = () => {
         occupation
     }));
 };
+const getPatientById = (id) => {
+    return patients_1.default.find(p => p.id === id);
+};
 const addPatient = (patient) => {
     const newPatient = Object.assign({ id: (0, uuid_1.v1)() }, patient);
     patients_1.default.push(newPatient);
     return newPatient;
 };
-exports.default = { getPatients, addPatient };
+const addEntry = (patient, entry) => {
+    const entryWithId = Object.assign(Object.assign({}, entry), { id: (0, uuid_1.v1)() });
+    patient.entries.push(entryWithId);
+    return patient;
+};
+exports.default = { getPatients, getPatientById, addPatient, addEntry };

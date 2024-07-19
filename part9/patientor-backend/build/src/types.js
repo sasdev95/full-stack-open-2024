@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Gender = void 0;
+exports.HealthCheckRating = exports.Gender = void 0;
 exports.isPatient = isPatient;
 const yup = __importStar(require("yup"));
 var Gender;
@@ -32,6 +32,13 @@ var Gender;
     Gender["Female"] = "female";
     Gender["Other"] = "other";
 })(Gender || (exports.Gender = Gender = {}));
+var HealthCheckRating;
+(function (HealthCheckRating) {
+    HealthCheckRating[HealthCheckRating["Healthy"] = 0] = "Healthy";
+    HealthCheckRating[HealthCheckRating["LowRisk"] = 1] = "LowRisk";
+    HealthCheckRating[HealthCheckRating["HighRisk"] = 2] = "HighRisk";
+    HealthCheckRating[HealthCheckRating["CriticalRisk"] = 3] = "CriticalRisk";
+})(HealthCheckRating || (exports.HealthCheckRating = HealthCheckRating = {}));
 const patientSchema = yup.object().shape({
     name: yup.string().required(),
     dateOfBirth: yup.string().required(),

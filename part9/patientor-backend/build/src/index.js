@@ -11,7 +11,6 @@ const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.get('/api/ping', (_req, res) => {
-    console.log('someone pinged here');
     res.send('pong');
 });
 app.use('/api/diagnoses', diagnosesRouter_1.default);

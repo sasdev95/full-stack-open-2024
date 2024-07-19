@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toNewPatient = void 0;
+exports.toNewEntry = exports.toNewPatient = void 0;
 const yup = __importStar(require("yup"));
 const types_1 = require("./types");
 const patientSchema = yup.object({
@@ -44,3 +44,38 @@ const toNewPatient = (object) => {
     return validatedData;
 };
 exports.toNewPatient = toNewPatient;
+const entrySchema = yup.object({
+    type: yup.string().required().oneOf(['Hospital', 'OccupationalHealthcare', 'HealthCheck']),
+    description: yup.string().required(),
+    date: yup.string().required(),
+    specialist: yup.string().required(),
+    diagnosisCodes: yup.array().of(yup.string()).optional(),
+    discharge: yup.object({
+        date: yup.string(),
+        criteria: yup.string(),
+    }).when('type', (type, schema) => type.toString() === 'Hospital' ? schema.required() : schema.notRequired()),
+    employerName: yup.string().when('type', (type, schema) => type.toString() === 'OccupationalHealthcare' ? schema.required() : schema.notRequired()),
+    sickLeave: yup.object({
+        startDate: yup.string(),
+        endDate: yup.string(),
+    }).when('type', (type, schema) => type.toString() === 'OccupationalHealthcare' ? schema.required() : schema.notRequired()),
+    healthCheckRating: yup.number().when('type', (type, schema) => type.toString() === 'HealthCheck' ? schema.oneOf(Object.values(types_1.HealthCheckRating).map(v => Number(v))).required() : schema.notRequired()),
+});
+const toNewEntry = (object) => {
+    if (!object.type || !['Hospital', 'OccupationalHealthcare', 'HealthCheck'].includes(object.type)) {
+        throw new Error('Invalid or missing "type" field');
+    }
+    try {
+        const validatedData = entrySchema.validateSync(object, { strict: true });
+        return validatedData;
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            throw new Error('Validation failed for entry data: ' + error);
+        }
+        else {
+            throw new Error('Unknown error during validation');
+        }
+    }
+};
+exports.toNewEntry = toNewEntry;

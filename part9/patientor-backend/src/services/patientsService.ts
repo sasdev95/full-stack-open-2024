@@ -1,5 +1,5 @@
 import patients from '../../data/patients';
-import { Patient, PublicPatient } from '../types';
+import { PublicPatient, Patient, Entry, EntryWithoutId } from '../types';
 import { v1 as uuid } from 'uuid';
 
 const getPatients = (): PublicPatient[] => {
@@ -12,6 +12,10 @@ const getPatients = (): PublicPatient[] => {
     }));
 };
 
+const getPatientById = (id: string): Patient | undefined => {
+    return patients.find(p => p.id === id);
+};
+
 const addPatient = (patient: Omit<Patient, 'id'>): Patient => {
     const newPatient: Patient = {
         id: uuid(),
@@ -21,4 +25,13 @@ const addPatient = (patient: Omit<Patient, 'id'>): Patient => {
     return newPatient;
 };
 
-export default { getPatients, addPatient };
+const addEntry = (patient: Patient, entry: EntryWithoutId): Patient => {
+    const entryWithId: Entry = {
+        ...entry,
+        id: uuid()
+    };
+    patient.entries.push(entryWithId);
+    return patient;
+};
+
+export default { getPatients, getPatientById, addPatient, addEntry };
