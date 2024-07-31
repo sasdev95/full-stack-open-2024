@@ -6,8 +6,8 @@ COPY --chown=node:node . .
 
 RUN npm ci
 
-ENV DEBUG=playground:*
-
 USER node
+
+#EXPOSE 3000
 
 CMD npm start

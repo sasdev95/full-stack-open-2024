@@ -1,0 +1,8 @@
+docker ps
+curl http://localhost:3000/todos
+db.todos.find({})
+db.todos.insertOne({ text: "Increase the number of tools in my tool belt", done: false })
+db.todos.find({})
+show collections
+use the_database
+show dbs
