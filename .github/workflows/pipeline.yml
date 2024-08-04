@@ -46,6 +46,13 @@ jobs:
           npx playwright install --with-deps
         working-directory: bloglist/bloglist-e2e-tests
 
+      - name: Start server
+        run: npm start &
+        working-directory: bloglist/server
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:5173
+
       - name: Run end-to-end tests
         run: npm t
         working-directory: bloglist/bloglist-e2e-tests
