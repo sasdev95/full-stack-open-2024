@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Install clientdependencies
+      - name: Install client dependencies
         run: npm install --prefix ./bloglist/client
         
       - name: Install backend dependencies
@@ -52,7 +52,7 @@ jobs:
         run: npx wait-on http://localhost:3003
 
       - name: Start client in development mode
-        run: npm run dev --prefix ./client &
+        run: npm run dev --prefix ./bloglist/client &
       
       - name: Wait for client to be ready
         run: npx wait-on http://localhost:3000
