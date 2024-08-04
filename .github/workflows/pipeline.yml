@@ -55,7 +55,7 @@ jobs:
         run: npm run dev --prefix ./bloglist/client &
       
       - name: Wait for client to be ready
-        run: npx wait-on http://localhost:3000
+        run: npx wait-on http://localhost:5173
       
       - name: Run end-to-end tests
         run: npm t
