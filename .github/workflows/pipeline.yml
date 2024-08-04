@@ -19,23 +19,23 @@ jobs:
 
       - name: Install client dependencies
         run: npm install
-        working-directory: client
+        working-directory: bloglist/client
 
       - name: Check style
         run: npm run lint
-        working-directory: client
+        working-directory: bloglist/client
 
       - name: Build client
         run: npm run build
-        working-directory: client
+        working-directory: bloglist/client
 
       - name: Install server dependencies
         run: npm install
-        working-directory: server
+        working-directory: bloglist/server
 
       - name: Run server unit tests
         run: npm t
-        working-directory: server
+        working-directory: bloglist/server
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
