@@ -44,11 +44,11 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps
-        working-directory: ./bloglist-e2e-tests
+        working-directory: bloglist-e2e-tests
 
       - name: Run end-to-end tests
         run: npm t
-        working-directory: ./bloglist-e2e-tests
+        working-directory: bloglist-e2e-tests
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
