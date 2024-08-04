@@ -49,6 +49,10 @@ jobs:
       - name: Start server
         run: npm start &
         working-directory: bloglist/server
+        env:
+          MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+          PORT: 5173
+          SECRET: ${{ secrets.SECRET }}
 
       - name: Wait for server to be ready
         run: npx wait-on http://localhost:5173
