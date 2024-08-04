@@ -51,11 +51,11 @@ jobs:
         working-directory: bloglist/server
         env:
           MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
-          PORT: 5173
+          PORT: 3003
           SECRET: ${{ secrets.SECRET }}
 
       - name: Wait for server to be ready
-        run: npx wait-on http://localhost:5173
+        run: npx wait-on http://localhost:3003
 
       - name: Run end-to-end tests
         run: npm t
