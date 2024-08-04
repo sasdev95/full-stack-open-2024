@@ -15,78 +15,65 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-
-      - name: Install client dependencies
-        run: npm install
-        working-directory: bloglist/client
-
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm install --prefix ./bloglist/client
+      - name: Install backend dependencies
+        run: npm install --prefix ./bloglist/server
+      
       - name: Check style
-        run: npm run lint
-        working-directory: bloglist/client
+        run: npm run lint --prefix ./bloglist/client
 
       - name: Build client
-        run: npm run build
-        working-directory: bloglist/client
-
-      - name: Start client in development mode
-        run: npm run dev &
-        working-directory: bloglist/client
-
-      - name: Install server dependencies
-        run: npm install
-        working-directory: bloglist/server
-
+        run: npm run build --prefix ./bloglist/client
+      
       - name: Run server unit tests
-        run: npm t
-        working-directory: bloglist/server
+        run: npm test --prefix ./bloglist/server
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
-
-      - name: Setup end-to-end tests
+          
+      - name: Setup Playwright
         run: |
           npm ci
           npx playwright install --with-deps
         working-directory: bloglist/bloglist-e2e-tests
-
-      - name: Start server
-        run: npm start &
-        working-directory: bloglist/server
+          
+      - name: Start server in production mode
+        run: npm run start-prod --prefix ./bloglist/server &
         env:
-          MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           PORT: 3003
           SECRET: ${{ secrets.SECRET }}
-
+      
       - name: Wait for server to be ready
         run: npx wait-on http://localhost:3003
-
-      - name: Wait for client to be ready
-        run: npx wait-on http://localhost:5173
-
+      
       - name: Run end-to-end tests
         run: npm t
         working-directory: bloglist/bloglist-e2e-tests
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
-
+      
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ''), '#skip') }}
+        if: ${{ github.ref == 'refs/heads/main' && !contains(join(github.event.commits.*.message), '#skip') }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
   tag_release:
     needs: simple_deployment_pipeline
     runs-on: ubuntu-20.04
+    if: ${{ github.ref == 'refs/heads/main' && !contains(join(github.event.commits.*.message), '#skip') }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+      
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.70.0
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ''), '#skip') }}
+        uses: anothrNick/github-tag-action@777684df761b882a3f4f70db16ac70d8cc78d0ea
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
-
+        
       - name: Success notification
         if: success()
         env:
