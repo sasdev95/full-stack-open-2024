@@ -29,6 +29,10 @@ jobs:
         run: npm run build
         working-directory: bloglist/client
 
+      - name: Start client in development mode
+        run: npm run dev &
+        working-directory: bloglist/client
+
       - name: Install server dependencies
         run: npm install
         working-directory: bloglist/server
