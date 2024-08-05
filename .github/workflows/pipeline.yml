@@ -35,30 +35,18 @@ jobs:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
           
-      - name: Setup Playwright
-        run: |
-          npm ci
-          npx playwright install --with-deps
-        working-directory: bloglist/bloglist-e2e-tests
-          
-      - name: Start server in production mode
-        run: npm run start-prod --prefix ./bloglist/server &
+      - name: Start server
+        run: npm run start-prod --prefix ./server &
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           PORT: 3003
           SECRET: ${{ secrets.SECRET }}
-      
+
       - name: Wait for server to be ready
         run: npx wait-on http://localhost:3003
-
-      - name: Start client in development mode
-        run: npm run dev --prefix ./bloglist/client &
-      
-      - name: Wait for client to be ready
-        run: npx wait-on http://localhost:5173
-      
+        
       - name: Run end-to-end tests
-        run: npm t
+        run: npm run test:e2e
         working-directory: bloglist/bloglist-e2e-tests
         env:
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
