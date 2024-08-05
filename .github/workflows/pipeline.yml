@@ -28,20 +28,20 @@ jobs:
 
       - name: Build client
         run: npm run build --prefix ./bloglist/client
-      
-      - name: Run server unit tests
-        run: npm test --prefix ./bloglist/server
-        env:
-          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
-          SECRET: ${{ secrets.SECRET }}
-          
+        
       - name: Start server
         run: npm run start-prod --prefix ./bloglist/server &
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           PORT: 3003
           SECRET: ${{ secrets.SECRET }}
-
+          
+      - name: Run server unit tests
+        run: npm test --prefix ./bloglist/server
+        env:
+          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+          SECRET: ${{ secrets.SECRET }}
+          
       - name: Wait for server to be ready
         run: npx wait-on http://localhost:3003
 
