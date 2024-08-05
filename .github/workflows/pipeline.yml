@@ -36,7 +36,7 @@ jobs:
           SECRET: ${{ secrets.SECRET }}
           
       - name: Start server
-        run: npm run start-prod --prefix ./server &
+        run: npm run start-prod --prefix ./bloglist/server &
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           PORT: 3003
